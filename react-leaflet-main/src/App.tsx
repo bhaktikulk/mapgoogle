@@ -595,24 +595,22 @@ function App() {
   };
 
   const calculateDistance = async () => {
-    try {
-      const sourceCoords = await getCoordinates(source);
-      const destinationCoords = await getCoordinates(destination);
+  try {
+    const sourceCoords = await getCoordinates(source);
+    const destinationCoords = await getCoordinates(destination);
 
-      const osrmUrl = `http://router.project-osrm.org/route/v1/driving/${sourceCoords.lng},${sourceCoords.lat};${destinationCoords.lng},${destinationCoords.lat}?overview=false`;
+    const response = await axios.post("https://mapgoogle-end.vercel.app/calculate-distance", {
+      source: sourceCoords,
+      destination: destinationCoords,
+    });
 
-      const response = await axios.get(osrmUrl);
-      const distanceKm = response.data.routes[0].distance / 1000; // Convert to km
-      const durationMin = response.data.routes[0].duration / 60; // Convert to minutes
+    setDistance(response.data.distance);
+  } catch (error) {
+    console.error("Error calculating distance:", error);
+    setDistance("Error fetching distance");
+  }
+};
 
-      setDistance(
-        `Distance: ${distanceKm.toFixed(2)} km | Duration: ${durationMin.toFixed(2)} mins`
-      );
-    } catch (error) {
-      console.error("Error calculating distance:", error);
-      setDistance("Error fetching distance");
-    }
-  };
 
   const switchLocations = () => {
     setSource(destination);
